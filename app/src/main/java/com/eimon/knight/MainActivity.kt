@@ -32,20 +32,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun onIncreaseBoardSize() {
+    private fun onIncreaseBoardSize() {
         if (boardSize == 16) return
         board.reset()
         boardSize += 1
     }
 
-    fun onDecreaseBoardSize() {
+    private fun onDecreaseBoardSize() {
         if (boardSize == 6) return
         board.reset()
         boardSize -= 1
     }
 
     @Composable
-    fun DrawContent() {
+    private fun DrawContent() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
