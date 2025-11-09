@@ -2,4 +2,6 @@
     <string name="app_name">Knight</string>
     <string name="knight_piece">♞</string>
     <string name="flag">🏁</string>
+    <string name="board_size">Board size</string>
+    <string name="max_moves">Max moves</string>
 </resources>

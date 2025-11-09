@@ -16,10 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 
-class Board(private val size: Int) {
+class Board() {
     // Coordinates (row, column)
     private var startingPoint by mutableStateOf(intArrayOf(0, 0))
     private var endingPoint by mutableStateOf(intArrayOf(0, 0))
@@ -54,7 +55,12 @@ class Board(private val size: Int) {
     }
 
     @Composable
-    fun Draw() {
+    fun Draw(size: Int) {
+        val configuration = LocalConfiguration.current
+        val screenWidth = configuration.screenWidthDp
+        val squareSize = (screenWidth - 60) / size
+        val itemSize = squareSize - 10
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -67,7 +73,7 @@ class Board(private val size: Int) {
                     for (col in 1..size) {
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(squareSize.dp)
                                 .background(colorResource(if ((row + col) % 2 == 0) R.color.blue else R.color.red))
                                 .clickable { setSelected(row, col) },
                             contentAlignment = Alignment.Center
@@ -75,14 +81,14 @@ class Board(private val size: Int) {
                             if (isStartingPoint(row, col)) {
                                 Text(
                                     stringResource(R.string.knight_piece),
-                                    fontSize = 30.sp,
+                                    fontSize = itemSize.sp,
                                     color = colorResource(R.color.yellow)
                                 )
                             }
                             if (isEndingPoint(row, col)) {
                                 Text(
                                     stringResource(R.string.flag),
-                                    fontSize = 30.sp,
+                                    fontSize = itemSize.sp,
                                 )
                             }
                         }
