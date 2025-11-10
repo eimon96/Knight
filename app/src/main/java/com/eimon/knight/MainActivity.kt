@@ -44,6 +44,17 @@ class MainActivity : ComponentActivity() {
         boardSize -= 1
     }
 
+    private fun onIncreaseMaxMoves() {
+        board.reset()
+        maxMoves += 1
+    }
+
+    private fun onDecreaseMaxMoves() {
+        if (maxMoves == 1) return
+        board.reset()
+        maxMoves -= 1
+    }
+
     @Composable
     private fun DrawContent() {
         Box(
@@ -59,10 +70,14 @@ class MainActivity : ComponentActivity() {
                     stringResource(R.string.board_size), boardSize,
                     { onIncreaseBoardSize() }, { onDecreaseBoardSize() })
 
-                board.Draw(boardSize)
+                board.Draw(boardSize, maxMoves)
 
                 Box(modifier = Modifier.align(Alignment.End)) {
-                    TextButton(stringResource(R.string.max_moves), maxMoves, {}, {})
+                    TextButton(
+                        stringResource(R.string.max_moves),
+                        maxMoves,
+                        { onIncreaseMaxMoves() },
+                        { onDecreaseMaxMoves() })
                 }
             }
 

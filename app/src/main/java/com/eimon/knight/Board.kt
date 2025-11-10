@@ -1,5 +1,6 @@
 package com.eimon.knight
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +22,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
-import com.eimon.knight.Utils.getKnightMoves
+import com.eimon.knight.Utils.findKnightPathBFS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.collections.contentEquals
 
 internal class Board(private val activity: MainActivity) {
     // Coordinates (row, column)
@@ -47,14 +49,22 @@ internal class Board(private val activity: MainActivity) {
         knightMoves.addAll(moves)
     }
 
-    private fun setSelected(row: Int, column: Int, boardSize: Int) {
+    private fun setSelected(row: Int, column: Int, boardSize: Int, maxMoves: Int) {
         if (isStartingPoint(0, 0)) {
             setStartingPoint(row, column)
         } else if (isEndingPoint(0, 0) && !isStartingPoint(row, column)) {
             setEndingPoint(row, column)
 
             getKnightMovesAsync(activity.lifecycleScope, boardSize) { moves ->
-                setKnightMoves(moves)
+                if (moves.size > maxMoves || (moves.size == 1 && moves[0] == Pair(0, 0))) {
+                    Toast.makeText(
+                        activity,
+                        activity.getString(R.string.no_path),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    setKnightMoves(moves)
+                }
             }
         }
     }
@@ -73,7 +83,7 @@ internal class Board(private val activity: MainActivity) {
         callback: (MutableList<Pair<Int, Int>>) -> Unit
     ) {
         scope.launch(Dispatchers.IO) {
-            val moves = getKnightMoves(startingPoint, boardSize)
+            val moves = findKnightPathBFS(startingPoint, endingPoint, boardSize)
             withContext(Dispatchers.Main) {
                 callback(moves)
             }
@@ -81,14 +91,13 @@ internal class Board(private val activity: MainActivity) {
     }
 
     internal fun reset() {
-        val defaultValue = listOf(Pair(0, 0)) as MutableList<Pair<Int, Int>>
         setStartingPoint(0, 0)
         setEndingPoint(0, 0)
-        setKnightMoves(defaultValue)
+        setKnightMoves(Utils.emptyList)
     }
 
     @Composable
-    internal fun Draw(size: Int) {
+    internal fun Draw(size: Int, maxMoves: Int) {
         val configuration = LocalConfiguration.current
         val screenWidth = configuration.screenWidthDp
         val squareSize = (screenWidth - 60) / size
@@ -108,7 +117,7 @@ internal class Board(private val activity: MainActivity) {
                             modifier = Modifier
                                 .size(squareSize.dp)
                                 .background(colorResource(if ((row + col) % 2 == 0) R.color.blue else R.color.red))
-                                .clickable { setSelected(row, col, size) },
+                                .clickable { setSelected(row, col, size, maxMoves) },
                             contentAlignment = Alignment.Center
                         ) {
                             if (isStartingPoint(row, col)) {
@@ -124,7 +133,11 @@ internal class Board(private val activity: MainActivity) {
                                     fontSize = itemSize.sp,
                                 )
                             }
-                            if (Pair(row, col) in knightMoves) {
+                            if (!isStartingPoint(row, col) && !isEndingPoint(row, col) && Pair(
+                                    row,
+                                    col
+                                ) in knightMoves
+                            ) {
                                 Text(
                                     stringResource(R.string.horse_shoe),
                                     fontSize = itemSize.sp,
