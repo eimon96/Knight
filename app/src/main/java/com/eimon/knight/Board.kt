@@ -14,13 +14,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
-import com.eimon.knight.Utils.validMoves
+import com.eimon.knight.Utils.getKnightMoves
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,7 +32,7 @@ internal class Board(private val activity: MainActivity) {
     private var startingPoint by mutableStateOf(intArrayOf(0, 0))
     private var endingPoint by mutableStateOf(intArrayOf(0, 0))
 
-    private var knightMoves = mutableListOf<Pair<Int, Int>>()
+    private var knightMoves = mutableStateListOf<Pair<Int, Int>>()
 
     private fun setStartingPoint(row: Int, column: Int) {
         startingPoint = intArrayOf(row, column)
@@ -42,7 +43,8 @@ internal class Board(private val activity: MainActivity) {
     }
 
     private fun setKnightMoves(moves: MutableList<Pair<Int, Int>>) {
-        knightMoves = moves
+        knightMoves.clear()
+        knightMoves.addAll(moves)
     }
 
     private fun setSelected(row: Int, column: Int, boardSize: Int) {
@@ -65,20 +67,13 @@ internal class Board(private val activity: MainActivity) {
         return (endingPoint.contentEquals(intArrayOf(row, column)))
     }
 
-    private fun getKnightMoves(boardSize: Int): MutableList<Pair<Int, Int>> {
-        val defaultValue = listOf(Pair(0, 0)) as MutableList<Pair<Int, Int>>
-        if (isStartingPoint(0, 0)) return defaultValue
-        val (row, column) = startingPoint
-        return validMoves(row, column, boardSize)
-    }
-
     internal fun getKnightMovesAsync(
         scope: CoroutineScope,
         boardSize: Int,
         callback: (MutableList<Pair<Int, Int>>) -> Unit
     ) {
         scope.launch(Dispatchers.IO) {
-            val moves = getKnightMoves(boardSize)
+            val moves = getKnightMoves(startingPoint, boardSize)
             withContext(Dispatchers.Main) {
                 callback(moves)
             }

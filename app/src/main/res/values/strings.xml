@@ -4,5 +4,5 @@
     <string name="flag">🏁</string>
     <string name="board_size">Board size</string>
     <string name="max_moves">Max moves</string>
-    <string name="horse_shoe">U</string>
+    <string name="horse_shoe">℧</string>
 </resources>
