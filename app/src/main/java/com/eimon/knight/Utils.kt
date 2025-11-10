@@ -33,12 +33,14 @@ internal object Utils {
         return validMoves(row, column, boardSize)
     }
 
+    internal fun parseToIntArray(str: String): IntArray {
+        val parts = str.split(",").map { it.trim().toInt() }
+        if (parts.size == 2) return intArrayOf(parts[0], parts[1])
+        return intArrayOf(0, 0)
+    }
+
     /**
-     * Finds the shortest path for a knight from startingPoint to endingPoint using BFS
      * Breadth-First Search
-     * @param startingPoint Starting position as IntArray [x, y]
-     * @param endingPoint Target position as IntArray [x, y]
-     * @param boardSize Size of the chessboard
      * @return MutableList of positions representing the shortest path, or (0,0) if no path found
      */
     internal fun findKnightPathBFS(

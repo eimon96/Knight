@@ -47,9 +47,10 @@ internal class Board(private val activity: MainActivity) {
     private fun setKnightMoves(moves: MutableList<Pair<Int, Int>>) {
         knightMoves.clear()
         knightMoves.addAll(moves)
+        saveKnight()
     }
 
-    private fun setSelected(row: Int, column: Int, boardSize: Int, maxMoves: Int) {
+    internal fun setSelected(row: Int, column: Int, boardSize: Int, maxMoves: Int) {
         if (isStartingPoint(0, 0)) {
             setStartingPoint(row, column)
         } else if (isEndingPoint(0, 0) && !isStartingPoint(row, column)) {
@@ -94,6 +95,18 @@ internal class Board(private val activity: MainActivity) {
         setStartingPoint(0, 0)
         setEndingPoint(0, 0)
         setKnightMoves(Utils.emptyList)
+    }
+
+    private fun saveKnight() {
+        val storage = StorageHandler(activity)
+        storage.saveToPrefs(
+            "startingPoint",
+            startingPoint[0].toString() + ',' + startingPoint[1].toString()
+        )
+        storage.saveToPrefs(
+            "endingPoint",
+            endingPoint[0].toString() + ',' + endingPoint[1].toString()
+        )
     }
 
     @Composable
