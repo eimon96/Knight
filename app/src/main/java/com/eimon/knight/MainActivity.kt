@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 class MainActivity : ComponentActivity() {
     private var boardSize by mutableIntStateOf(8)
     private var maxMoves by mutableIntStateOf(3)
-    private val board = Board()
+    private val board = Board(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

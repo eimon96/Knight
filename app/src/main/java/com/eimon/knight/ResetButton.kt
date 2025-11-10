@@ -13,7 +13,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ResetButton(onClick: () -> Unit) {
+internal fun ResetButton(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .size(60.dp)
