@@ -57,7 +57,7 @@ internal class Board(private val activity: MainActivity) {
             setEndingPoint(row, column)
 
             getKnightMovesAsync(activity.lifecycleScope, boardSize) { moves ->
-                if (moves.size > maxMoves || (moves.size == 1 && moves[0] == Pair(0, 0))) {
+                if (moves.size > maxMoves + 1 || (moves.size == 1 && moves[0] == Pair(0, 0))) {
                     Toast.makeText(
                         activity,
                         activity.getString(R.string.no_path),
